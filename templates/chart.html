@@ -14,7 +14,7 @@
     <div class="width">
         <div class="height">
             <div class="board">
-                <h1 style="text-align: center;font-weight: bold; color: #2BAE66;">Que.kr</h1>
+                <h1 style="text-align: center;font-weight: bold; color: #2BAE66;margin-bottom:10%">Que.kr</h1>
                 <div id="time">
                     <h5 style="font-weight: bold; color: #2BAE66;">접속자(일)</h5>
                     <canvas id="timeChart"></canvas>
@@ -27,29 +27,12 @@
                     <canvas id="deviceChart"></canvas>
                 </div>
                 <div id="user">
-                    <h5 style="font-weight: bold; color: #2BAE66;">접속자 IP</h5>
-                    <table class="table align-middle">
-                        <thead>
-                        <tr>
-                            <th scope="col">IP</th>
-                            <th scope="col">시간</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>127.135.145.123</td>
-                            <td class="textAlignCenter">2022-12-54 12:22:32</td>
-                        </tr>
-                        <tr>
-                            <td>127.135.145.123</td>
-                            <td class="textAlignCenter">2022-12-54 12:22:32</td>
-                        </tr>
-                        <tr>
-                            <td>127.135.145.123</td>
-                            <td class="textAlignCenter">2022-12-54 12:22:32</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <h5 style="font-weight: bold; color: #2BAE66;">Original URL 변경</h5>
+                    <textarea class="form-control" rows="3" style="resize: none;">https://www.naver.com/jskdjf12f781go28f9ho12hf89ph9apsdf8hapd98hf</textarea>
+                    <button class="btn btn-success" type="button">Change</button>
+                    <hr>
+                    <h5 style="font-weight: bold; color: #2BAE66;">Que.kr URL 삭제</h5>
+                    <button class="btn btn-danger" type="button" style="margin: 0">Delete</button>
                 </div>
                 <div id="from">
                     <h5 style="font-weight: bold; color: #2BAE66;">Referer Domain</h5>
@@ -77,10 +60,10 @@
                     </table>
                 </div>
                 <div id="navigator" class="d-flex justify-content-center">
-                    <button class="btn btn-success" onclick="clickTime()">Time</button>
-                    <button class="btn btn-success" onclick="clickDevice()">Device</button>
-                    <button class="btn btn-success" onclick="clickUser()">User</button>
-                    <button class="btn btn-success" onclick="clickFrom()">From</button>
+                    <button class="btn btn-success" onclick="clickTime()"><img class="svg" src="./resource/clock.svg"></button>
+                    <button class="btn btn-success" onclick="clickDevice()"><img class="svg" src="./resource/usb.svg"></button>
+                    <button class="btn btn-success" onclick="clickFrom()"><img class="svg" src="./resource/enter.svg"></button>
+                    <button class="btn btn-success" onclick="clickUser()"><img class="svg" src="./resource/pencil.svg"></button>
                 </div>
             </div>
         </div>
@@ -103,7 +86,11 @@
         background: #2BAE66;
         border: #2BAE66;
     }
-    
+    .svg{
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+    }
 
     html,body{
         height: 100%;
