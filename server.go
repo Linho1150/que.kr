@@ -4,6 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func setupRouter() *gin.Engine {
 	server := gin.Default()
+	server.LoadHTMLGlob("templates/*")
 	server.GET("/", func(reposne *gin.Context) {
 		reposne.String(200, "Hello World")
 	})
@@ -12,5 +13,5 @@ func setupRouter() *gin.Engine {
 
 func main() {
 	server := setupRouter()
-	server.Run(":8080")
+	server.Run(":7979")
 }
