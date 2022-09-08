@@ -98,7 +98,7 @@ func (o *Service) CreateMapping(originalUrl string, requestIPAddress string) (*M
 }
 
 func (o *Service) RemoveMapping(shortKey string, secretToken string) error {
-	item, err := o.QueryMapping(shortKey, false)
+	item, err := o.QueryMapping(shortKey)
 
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func (o *Service) RemoveMapping(shortKey string, secretToken string) error {
 }
 
 func (o *Service) UpdateMapping(shortKey string, secretToken string, originalUrl string) error {
-	item, err := o.QueryMapping(shortKey, false)
+	item, err := o.QueryMapping(shortKey)
 
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (o *Service) UpdateMapping(shortKey string, secretToken string, originalUrl
 	return nil
 }
 
-func (o *Service) QueryMapping(shortKey string, hit bool) (*MappingInfo, error) {
+func (o *Service) QueryMapping(shortKey string) (*MappingInfo, error) {
 	result, err := o.DbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		Key: map[string]types.AttributeValue{
 			"innerId": &types.AttributeValueMemberS{
@@ -162,6 +162,7 @@ func (o *Service) QueryMapping(shortKey string, hit bool) (*MappingInfo, error) 
 	if result.Item == nil {
 		return nil, errors.New("item does not exist")
 	}
+
 
 	item := &MappingInfo{}
 

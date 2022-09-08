@@ -31,8 +31,6 @@ func main() {
 
 	if err == nil {
 		panic("update why succeed?")
-	} else {
-		// fmt.Println(err)
 	}
 
 	err = service.UpdateMapping(info.ShortKey, info.SecretToken, "https://daum.net")
@@ -41,4 +39,17 @@ func main() {
 		panic(err)
 	}
 
+	info, err := service.QueryMapping(info.ShortKey)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%s => %s\n", info.ShortKey, info.OriginalUrl)
+
+	err = service.RemoveMapping(info.ShortKey, info.SecretToken)
+
+	if err != nil {
+		panic(err)
+	}
 }
