@@ -39,7 +39,7 @@ func main() {
 		panic(err)
 	}
 
-	info, err := service.QueryMapping(info.ShortKey)
+	info, err = service.QueryMapping(info.ShortKey)
 
 	if err != nil {
 		panic(err)
