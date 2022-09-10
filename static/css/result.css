@@ -1,43 +1,45 @@
-html,body{
-    height: 100%;
-    background-color: #FCF6F5;
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background-color: #fcf6f5;
 }
-.width{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
+.width {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
 }
-.height{
-    width: 300px;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    flex-direction: column;
+.height {
+  width: 300px;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  flex-direction: column;
 }
-#inputUrl{
-    text-align: center;
-    border: solid 2px #2BAE66;
+#inputUrl {
+  text-align: center;
+  border: solid 2px #2bae66;
 }
-#inputUrl::placeholder{
-    color:#2BAE66;
-    font-weight: lighter;
+#inputUrl::placeholder {
+  color: #2bae66;
+  font-weight: lighter;
 }
-button{
-    width: 100%;
-    margin-top: 5%;
-    background:#2BAE66
+button {
+  width: 100%;
+  margin-top: 5%;
+  background: #2bae66;
 }
-.btn-success{
-    background: #2BAE66;
-    border: #2BAE66;
+.btn-success {
+  background: #2bae66;
+  border: #2bae66;
 }
-.board{
-    background-color: white;
-    box-shadow: 2px 2px 2px 2px #2BAE66 ;
-    border-radius: 5px;
-    padding: 10%;
+.board {
+  background-color: white;
+  box-shadow: 2px 2px 2px 2px #2bae66;
+  border-radius: 5px;
+  padding: 10%;
 }
-p{
-    margin:0%;
+p {
+  margin: 0%;
 }
