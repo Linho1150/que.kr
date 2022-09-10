@@ -77,10 +77,10 @@
 				</table>
 			</div>
 			<div id="navigator" class="d-flex justify-content-center">
-				<button class="btn btn-success" onclick="clickTime()"><img class="svg" src="/static/svg/clock.svg"></button>
-				<button class="btn btn-success" onclick="clickDevice()"><img class="svg" src="/static/svg/usb.svg"></button>
-				<button class="btn btn-success" onclick="clickFrom()"><img class="svg" src="/static/svg/enter.svg"></button>
-				<button class="btn btn-success" onclick="clickUser()"><img class="svg" src="/static/svg/pencil.svg"></button>
+				<button class="btn btn-success" id="btnTime" onclick="clickTime()"><img class="svg" src="/static/svg/clock.svg"></button>
+				<button class="btn btn-success" id="btnDevice" onclick="clickDevice()"><img class="svg" src="/static/svg/usb.svg"></button>
+				<button class="btn btn-success" id="btnFrom" onclick="clickFrom()"><img class="svg" src="/static/svg/enter.svg"></button>
+				<button class="btn btn-success" id="btnUser" onclick="clickUser()"><img class="svg" src="/static/svg/pencil.svg"></button>
 			</div>
 		</div>
 	</div>
@@ -91,27 +91,40 @@
     const divFrom = document.getElementById("from");
     const divDevice = document.getElementById("device");
     const divUser = document.getElementById("user");
+    const btnTime = document.getElementById("btnTime");    
+    const btnDevice = document.getElementById("btnDevice");
+    const btnFrom = document.getElementById("btnFrom");    
+    const btnUser = document.getElementById("btnUser");
+
     function clickTime(){
         divClear();
-        divTime.style.display="block";     
+        divTime.style.display="block";
+        btnTime.classList.add("active");   
     }
     function clickFrom(){
         divClear();
-        divFrom.style.display="block";     
+        divFrom.style.display="block";
+        btnFrom.classList.add("active");     
     }
     function clickDevice(){
         divClear();
-        divDevice.style.display="block";     
+        divDevice.style.display="block";
+        btnDevice.classList.add("active");     
     }
     function clickUser(){
         divClear();
-        divUser.style.display="block";     
+        divUser.style.display="block";
+        btnUser.classList.add("active");     
     }
     function divClear(){
         divTime.style.display="none";     
         divFrom.style.display="none";     
         divDevice.style.display="none";     
-        divUser.style.display="none";     
+        divUser.style.display="none";
+        btnTime.className="btn btn-success";
+        btnFrom.className="btn btn-success";
+        btnDevice.className="btn btn-success";
+        btnUser.className="btn btn-success";
     }
 </script>
 <script type="text/javascript">
