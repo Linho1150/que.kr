@@ -54,4 +54,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// queuing raw access record for accumlating statistics info
+	err = svc.TouchStatistics("abc", time.Now(), "127.0.0.1", "https://daum.net", service.DeviceTypePC)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("go!")
 }
