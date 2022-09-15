@@ -5,16 +5,17 @@ package main
 import (
 	"fmt"
 	"quekr/server/service"
+	"time"
 )
 
 func main() {
-	service, err := service.NewService()
+	svc, err := service.NewService()
 
 	if err != nil {
 		panic(err)
 	}
 
-	info, err := service.CreateMapping("https://naver.com", "127.0.0.1")
+	info, err := svc.CreateMapping("https://naver.com", "127.0.0.1")
 
 	if err != nil {
 		panic(err)
@@ -23,25 +24,25 @@ func main() {
 	fmt.Println("created")
 	fmt.Println(info)
 
-	err = service.UpdateMapping(info.ShortKey, "abc", "https://daum.net")
+	err = svc.UpdateMapping(info.ShortKey, "abc", "https://daum.net")
 
 	if err == nil {
 		panic("update why succeed?")
 	}
 
-	err = service.UpdateMapping("notexist", "abc", "https://daum.net")
+	err = svc.UpdateMapping("notexist", "abc", "https://daum.net")
 
 	if err == nil {
 		panic("update why succeed?")
 	}
 
-	err = service.UpdateMapping(info.ShortKey, info.SecretToken, "https://daum.net")
+	err = svc.UpdateMapping(info.ShortKey, info.SecretToken, "https://daum.net")
 
 	if err != nil {
 		panic(err)
 	}
 
-	info, err = service.QueryMapping(info.ShortKey)
+	info, err = svc.QueryMapping(info.ShortKey)
 
 	if err != nil {
 		panic(err)
@@ -49,7 +50,7 @@ func main() {
 
 	fmt.Printf("%s => %s\n", info.ShortKey, info.OriginalUrl)
 
-	err = service.RemoveMapping(info.ShortKey, info.SecretToken)
+	err = svc.RemoveMapping(info.ShortKey, info.SecretToken)
 
 	if err != nil {
 		panic(err)
@@ -63,4 +64,14 @@ func main() {
 	}
 
 	fmt.Println("go!")
+
+	starows, err := svc.QueryStatistics("aaa", service.StatisticLegendTypeReferer, false)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, starow := range starows {
+		fmt.Printf("%s => %d \n", starow.Legend.(string), starow.Counter)
+	}
 }

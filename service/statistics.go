@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/jaevor/go-nanoid"
 )
 
@@ -103,6 +105,69 @@ func (o *Service) AccumlateStatisticsCounter(sequence string) error {
 	o.IncrementStatisticsCounter("referer", item.ShortKey, "referer", item.Referer)
 	o.IncrementStatisticsCounter("devicetype", item.ShortKey, "devicetype", item.DeviceType)
 	return nil
+}
+
+type StatisticsLegendType struct {
+	TableName   string
+	FieldName   string
+	FieldTypeEx interface{}
+}
+
+type QueryStatisticsResultRow struct {
+	Legend  interface{}
+	Counter int
+}
+
+var (
+	StatisticLegendTypeReferer       = &StatisticsLegendType{"referer", "referer", string("")}
+	StatisticLegendTypeTimePerMinute = &StatisticsLegendType{"time_per_minute", "datetime", time.Time{}}
+	StatisticLegendTypeTimePerDate   = &StatisticsLegendType{"time_per_date", "datetime", time.Time{}}
+	StatisticLegendTypeDevicetype    = &StatisticsLegendType{"devicetype", "devicetype", string("")}
+)
+
+func (o *Service) QueryStatistics(shortKey string, legend *StatisticsLegendType, isAscending bool) ([]*QueryStatisticsResultRow, error) {
+	fullTableName := aws.String("statistics_accum_" + legend.TableName)
+
+	result, err := o.DbClient.Query(context.TODO(), &dynamodb.QueryInput{
+		TableName:              fullTableName,
+		KeyConditionExpression: aws.String("shortKey=:shortKey"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":shortKey": &types.AttributeValueMemberS{
+				Value: shortKey,
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	ret := make([]*QueryStatisticsResultRow, 0)
+	decoder := attributevalue.NewDecoder()
+
+	for _, item := range result.Items {
+		legendReflect := reflect.New(reflect.ValueOf(legend.FieldTypeEx).Type())
+		legendVal := legendReflect.Interface()
+		err = decoder.Decode(item[legend.FieldName], legendVal)
+
+		if err != nil {
+			return nil, err
+		}
+
+		var counterVal int
+		err = decoder.Decode(item["counter"], &counterVal)
+
+		if err != nil {
+			return nil, err
+		}
+
+		ret = append(ret, &QueryStatisticsResultRow{
+			Counter: counterVal,
+			Legend:  legendReflect.Elem().Interface(),
+		})
+	}
+
+	return ret, nil
 }
 
 func RoundDateTime(target *time.Time, seconds int) *time.Time {
