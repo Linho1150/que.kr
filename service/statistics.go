@@ -136,6 +136,7 @@ func (o *Service) QueryStatistics(shortKey string, legend *StatisticsLegendType,
 				Value: shortKey,
 			},
 		},
+		ScanIndexForward: &isAscending,
 	})
 
 	if err != nil {
