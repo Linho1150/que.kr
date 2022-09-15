@@ -17,19 +17,17 @@ jobs:
         go-version: 1.18
         
     - name: Install zip package
-      run: apt install zip
+      run: sudo apt install zip
 
     - name: Build
       run: GOOS=linux CGO_ENABLED=0 go build -v -tags statistics_accum_handler .
-
-    - name: Grant Execute Permission
-      run: chmod +x
       
-    - name: Rename artifact
-      run: mv server main
-      
-    - name: Packaging artifact
-      run: zip function.zip main
+    - name: Preparing package
+      run: |
+        rm -rf function.zip
+        mv server main
+        chmod +x main
+        zip function.zip main
     
 #    - name: Deploy to AWS
 #      run: aws lambda update-function-code --function-name statistics_accum_handler --zip-file fileb://function.zip
