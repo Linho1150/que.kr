@@ -1,0 +1,38 @@
+name: Go
+
+on:
+  push:
+    branches: [ "5-aws-lambda-function-deploy-automation" ]
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ap-northeast-2
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+        
+    - name: Install zip package
+      run: sudo apt install zip
+
+    - name: Build
+      run: GOOS=linux CGO_ENABLED=0 go build -v -tags statistics_accum_handler .
+      
+    - name: Preparing package
+      run: |
+        rm -rf function.zip
+        mv server main
+        chmod +x main
+        zip function.zip main
+    
+    - name: Deploy to AWS
+      run: aws lambda update-function-code --function-name quekr-process-statistics --zip-file fileb://function.zip
