@@ -35,4 +35,4 @@ jobs:
         zip function.zip main
     
     - name: Deploy to AWS
-      run: aws lambda update-function-code --function-name statistics_accum_handler --zip-file fileb://function.zip
+      run: aws lambda update-function-code --function-name quekr-process-statistics --zip-file fileb://function.zip
