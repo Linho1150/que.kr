@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"quekr/server/service"
 )
 
@@ -49,22 +50,16 @@ func main() {
 
 	fmt.Printf("%s => %s\n", info.ShortKey, info.OriginalUrl)
 
-	err = svc.RemoveMapping(info.ShortKey, info.SecretToken)
-
-	if err != nil {
-		panic(err)
-	}
-
 	// queuing raw access record for accumlating statistics info
-	err = svc.TouchStatistics("abc", svc.NowLocalTime(), "127.0.0.1", "https://daum.net", service.DeviceTypePC)
+	err = svc.TouchStatistics(info.ShortKey, svc.NowLocalTime(), "127.0.0.1", "https://referer", service.DeviceTypePC)
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("go!")
+	time.Sleep(time.Second * 40)
 
-	starows, err := svc.QueryStatistics("aaa", service.StatisticLegendTypeReferer, false)
+	starows, err := svc.QueryStatistics(info.ShortKey, service.StatisticLegendTypeReferer, false)
 
 	if err != nil {
 		panic(err)
@@ -72,5 +67,11 @@ func main() {
 
 	for _, starow := range starows {
 		fmt.Printf("%s => %d \n", starow.Legend.(string), starow.Counter)
+	}
+
+	err = svc.RemoveMapping(info.ShortKey, info.SecretToken)
+
+	if err != nil {
+		panic(err)
 	}
 }
