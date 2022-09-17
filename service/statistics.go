@@ -100,8 +100,8 @@ func (o *Service) AccumlateStatisticsCounter(sequence string) error {
 		return err
 	}
 
-	o.IncrementStatisticsCounter("time_per_date", item.ShortKey, "datetime", RoundDateTime(&item.CreatedDate, 60*60*24))
-	o.IncrementStatisticsCounter("time_per_minute", item.ShortKey, "datetime", RoundDateTime(&item.CreatedDate, 60))
+	o.IncrementStatisticsCounter("time_per_date", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60*60*24))
+	o.IncrementStatisticsCounter("time_per_minute", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60))
 	o.IncrementStatisticsCounter("referer", item.ShortKey, "referer", item.Referer)
 	o.IncrementStatisticsCounter("devicetype", item.ShortKey, "devicetype", item.DeviceType)
 	return nil
@@ -171,10 +171,9 @@ func (o *Service) QueryStatistics(shortKey string, legend *StatisticsLegendType,
 	return ret, nil
 }
 
-func RoundDateTime(target *time.Time, seconds int) *time.Time {
-	secs := (int64(target.UnixMilli()) / int64(seconds)) * int64(seconds)
-	ret := time.UnixMilli(secs)
-	return &ret
+func RoundDateTimeAndConvertToTimestamp(target *time.Time, seconds int) int64 {
+	secs := (int64(target.UnixMilli()) / 1000 / int64(seconds)) * int64(seconds)
+	return secs
 }
 
 func (o *Service) IncrementStatisticsCounter(tableName string, shortKey string, secondaryKeyName string, secondaryKeyValue interface{}) error {
