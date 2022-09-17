@@ -1,4 +1,4 @@
-//go:build statistics_handler
+//go:build statistics_accum_handler
 
 package main
 
