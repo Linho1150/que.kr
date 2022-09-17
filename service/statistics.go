@@ -100,10 +100,17 @@ func (o *Service) AccumlateStatisticsCounter(sequence string) error {
 		return err
 	}
 
-	o.IncrementStatisticsCounter("time_per_date", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60*60*24))
-	o.IncrementStatisticsCounter("time_per_minute", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60))
-	o.IncrementStatisticsCounter("referer", item.ShortKey, "referer", item.Referer)
-	o.IncrementStatisticsCounter("devicetype", item.ShortKey, "devicetype", item.DeviceType)
+	for _, err = range []error{
+		o.IncrementStatisticsCounter("time_per_date", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60*60*24)),
+		o.IncrementStatisticsCounter("time_per_minute", item.ShortKey, "datetime", RoundDateTimeAndConvertToTimestamp(&item.CreatedDate, 60)),
+		o.IncrementStatisticsCounter("referer", item.ShortKey, "referer", item.Referer),
+		o.IncrementStatisticsCounter("devicetype", item.ShortKey, "devicetype", item.DeviceType),
+	} {
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
