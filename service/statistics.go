@@ -238,8 +238,8 @@ func (o *Service) IncrementStatisticsCounter(tableName string, shortKey string, 
 	return nil
 }
 
-func (o *StatisticsRawItem) FillGeneratedSequence() {
-	now := time.Now()
+func (o *StatisticsRawItem) FillGeneratedSequence(svc *Service) {
+	now := svc.NowLocalTime()
 	o.Sequence = fmt.Sprintf("%d#%s", now.UnixMicro(), sequenceRandomGenerator())
 }
 
@@ -252,7 +252,7 @@ func (o *Service) TouchStatistics(shortKey string, createdDate time.Time, ipAddr
 		DeviceType:  deviceType,
 	}
 
-	item.FillGeneratedSequence()
+	item.FillGeneratedSequence(o)
 	marshal, err := attributevalue.MarshalMap(item)
 
 	if err != nil {

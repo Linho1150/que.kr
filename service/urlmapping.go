@@ -69,7 +69,7 @@ func (o *Service) tryCreateMapping(originalUrl string, requestIPAddress string) 
 	mappingInfo := &MappingInfo{
 		ShortKey:         shortKey,
 		OriginalUrl:      originalUrl,
-		CreatedDate:      time.Now(),
+		CreatedDate:      o.NowLocalTime(),
 		SecretToken:      secretToken,
 		RequestIPAddress: requestIPAddress,
 	}
@@ -162,7 +162,6 @@ func (o *Service) QueryMapping(shortKey string) (*MappingInfo, error) {
 	if result.Item == nil {
 		return nil, errors.New("item does not exist")
 	}
-
 
 	item := &MappingInfo{}
 

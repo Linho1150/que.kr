@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"quekr/server/service"
-	"time"
 )
 
 func main() {
@@ -57,7 +56,7 @@ func main() {
 	}
 
 	// queuing raw access record for accumlating statistics info
-	err = svc.TouchStatistics("abc", time.Now(), "127.0.0.1", "https://daum.net", service.DeviceTypePC)
+	err = svc.TouchStatistics("abc", svc.NowLocalTime(), "127.0.0.1", "https://daum.net", service.DeviceTypePC)
 
 	if err != nil {
 		panic(err)
