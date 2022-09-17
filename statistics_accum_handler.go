@@ -1,23 +1,31 @@
-//go:build statistics_accum_handler
+//go:build statistics_handler
 
 package main
 
 import (
 	"context"
-	"fmt"
+	"quekr/server/service"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func HandleRequest(ctx context.Context, evts events.DynamoDBEvent) (string, error) {
-	var count int
+	svc, err := service.NewService()
 
-	for _, _ = range evts.Records {
-		count += 1
+	if err != nil {
+		return "cannot initiate service instance", err
 	}
 
-	return fmt.Sprintf("%d record(s) handled", count), nil
+	for _, record := range evts.Records {
+		err = svc.AccumlateStatisticsCounter(record.Change.NewImage["sequence"].String())
+
+		if err != nil {
+			return "error occurred while processing event", err
+		}
+	}
+
+	return "", nil
 }
 
 func main() {
