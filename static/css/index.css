@@ -25,12 +25,9 @@ body {
   color: #2bae66;
   font-weight: lighter;
 }
-button {
+#submitBtn {
   width: 100%;
   margin-top: 5%;
-  background: #2bae66;
-}
-.btn-success {
   background: #2bae66;
   border: #2bae66;
 }
