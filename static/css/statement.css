@@ -1,0 +1,88 @@
+#navigator {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 5%;
+}
+#navigator button {
+  margin: 1%;
+}
+.btn-success {
+  background: #2bae66;
+  border: #2bae66;
+}
+.svg {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background-color: #fcf6f5;
+}
+.width {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+.height {
+  width: 300px;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  flex-direction: column;
+}
+#inputUrl {
+  text-align: center;
+  border: solid 2px #2bae66;
+}
+#inputUrl::placeholder {
+  color: #2bae66;
+  font-weight: lighter;
+}
+button {
+  width: 100%;
+  margin-top: 5%;
+  background: #2bae66;
+}
+.btn-success {
+  background: #2bae66;
+  border: #2bae66;
+}
+.board {
+  position: relative;
+  background-color: white;
+  box-shadow: 2px 2px 2px 2px #2bae66;
+  border-radius: 5px;
+  padding: 10%;
+  height: 550px;
+}
+p {
+  margin: 0%;
+}
+canvas {
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 100%;
+}
+#device {
+  display: none;
+  transition: all 0.5;
+}
+#from {
+  display: none;
+}
+#user {
+  display: none;
+}
+#time {
+  display: block;
+}
+.textAlignCenter {
+  text-align: center;
+}
