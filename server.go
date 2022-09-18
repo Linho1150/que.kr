@@ -1,12 +1,20 @@
+//go:build server
+
 package main
 
 import (
 	"net/http"
+	"quekr/server/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func setupRouter() *gin.Engine {
+	svc, err := service.NewService()
+	 if err != nil {
+		panic(err)
+	}
+
 	server := gin.Default()
 	server.Static("/static", "./static")
 	server.LoadHTMLGlob("templates/*")
@@ -16,10 +24,29 @@ func setupRouter() *gin.Engine {
 		},
 		)
 	})
-	server.GET("/urls", func(response *gin.Context) {
+	server.POST("/",func (response *gin.Context)  {
+		originalURL := response.PostForm("originalURL");
+		ipAddress := ReadUserIP(response.Request)
+		info, err := svc.CreateMapping(originalURL, ipAddress)
+		if err != nil {
+			panic(err)
+		}
+		responseHTML :=
+		`<html>
+			<form action="/urls" method="POST">
+				<input type="text" name="innerUrl" value="https://que.kr/` +info.ShortKey+ `"/>
+				<input type="text" name="adminUrl" value="https://que.kr/`+info.ShortKey+ "/" +info.SecretToken+`"/>
+			</form>
+			<script>document.forms[0].submit();</script>
+		</html>`
+		response.Data(http.StatusOK, "text/html; charset=utf-8", []byte(responseHTML))
+	})
+	server.POST("/urls", func(response *gin.Context) {
+		innerUrl := response.PostForm("innerUrl");
+		adminUrl := response.PostForm("adminUrl");
 		response.HTML(http.StatusOK, "result.html", gin.H{
-			"innerUrl": "www.naver.com",
-			"outerUrl": "www.google.com",
+			"innerUrl": innerUrl,
+			"adminUrl": adminUrl,
 		},
 		)
 	})
@@ -44,4 +71,15 @@ func setupRouter() *gin.Engine {
 func main() {
 	server := setupRouter()
 	server.Run(":7979")
+}
+
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress == "" {
+			IPAddress = r.Header.Get("X-Forwarded-For")
+	}
+	if IPAddress == "" {
+			IPAddress = r.RemoteAddr
+	}
+	return IPAddress
 }
