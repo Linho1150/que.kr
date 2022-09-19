@@ -4,6 +4,7 @@ package main
 
 import (
 	"net/http"
+
 	"quekr/server/service"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +60,15 @@ func setupRouter() *gin.Engine {
 		},
 		)
 	})
+	server.GET("/:shortkey", func(response *gin.Context) {
+		shortkey := response.Param("shortkey")
+		item, err := svc.QueryMapping(shortkey)
+		if err != nil {
+			panic(err)
+		}
+    response.Redirect(http.StatusTemporaryRedirect, "http://"+item.OriginalUrl)
+	})
+
 	server.PUT("/urls", func(response *gin.Context) {
 		response.String(200, "Hi")
 	})
