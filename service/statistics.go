@@ -181,7 +181,8 @@ func (o *Service) QueryStatistics(shortKey string, legend *StatisticsLegendType,
 }
 
 func RoundDateTimeAndConvertToTimestamp(target *time.Time, seconds int) int64 {
-	secs := (int64(target.UnixMilli()) / 1000 / int64(seconds)) * int64(seconds)
+	_, offset = target.Zone()
+	secs := ((int64(target.UnixMilli()) / 1000 + int64(offset)) / int64(seconds)) * int64(seconds) - int64(offset)
 	return secs
 }
 
