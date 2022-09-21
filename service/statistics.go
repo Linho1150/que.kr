@@ -19,6 +19,8 @@ type DeviceType string
 const (
 	DeviceTypePC     = DeviceType("pc")
 	DeviceTypeMobile = DeviceType("mobile")
+
+	UnknownValue      = ""
 )
 
 var sequenceRandomGenerator = initSequenceRandomGenerator()
