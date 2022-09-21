@@ -20,7 +20,7 @@ const (
 	DeviceTypePC     = DeviceType("pc")
 	DeviceTypeMobile = DeviceType("mobile")
 
-	UnknownValue      = ""
+	UnknownValue      = "(unknown)"
 )
 
 var sequenceRandomGenerator = initSequenceRandomGenerator()
