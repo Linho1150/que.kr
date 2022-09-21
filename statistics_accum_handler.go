@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"context"
 	"quekr/server/service"
 
@@ -18,7 +19,9 @@ func HandleRequest(ctx context.Context, evts events.DynamoDBEvent) (string, erro
 	}
 
 	for _, record := range evts.Records {
-		err = svc.AccumlateStatisticsCounter(record.Change.NewImage["sequence"].String())
+		sequence := record.Change.NewImage["sequence"].String()
+		fmt.Printf("======== %s =======\n", sequence);
+		err = svc.AccumlateStatisticsCounter(sequence)
 
 		if err != nil {
 			return "error occurred while processing event", err
