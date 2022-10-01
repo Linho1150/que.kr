@@ -111,21 +111,21 @@
   <script type="text/javascript">
     const refererBody = document.getElementById("refererBody");
 
-    const accReferer= {{.referer}}.split(',');
-    for(domainData of accReferer){
-        const splitDomainData=domainData.split('/');
+    const accReferer = "{{.referer}}".split(",");
+    for (domainData of accReferer) {
+      const splitDomainData = domainData.split("/");
 
-        const tr=document.createElement("tr");
-        const td1=document.createElement("td");
-        const td2=document.createElement("td");
-        const td1Value=document.createTextNode(splitDomainData[0]);
-        const td2Value=document.createTextNode(splitDomainData[1]);
-        td1.appendChild(td1Value);
-        td2.appendChild(td2Value);
-        td2.setAttribute("class","textAlignCenter");
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        refererBody.appendChild(tr);
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      const td1Value = document.createTextNode(splitDomainData[0]);
+      const td2Value = document.createTextNode(splitDomainData[1]);
+      td1.appendChild(td1Value);
+      td2.appendChild(td2Value);
+      td2.setAttribute("class", "textAlignCenter");
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      refererBody.appendChild(tr);
     }
   </script>
   <script type="text/javascript">
@@ -170,13 +170,13 @@
     }
   </script>
   <script type="text/javascript">
-    const accMin= {{.accessMin}}.split(',');
+    const accMin = "{{.accessMin}}".split(",");
 
-    const accDay= {{.accessDay}}.split(',');
-    const accDayTxt= accDay[0].split('/');
-    const accDayData= accDay[1].split('/');
+    const accDay = "{{.accessDay}}".split(",");
+    const accDayTxt = accDay[0].split("/");
+    const accDayData = accDay[1].split("/");
 
-    const accDevice= {{.accessDevice}}.split('/');
+    const accDevice = "{{.accessDevice}}".split("/");
   </script>
   <script type="text/javascript">
     const accMinBody = document.getElementById("accMinBody");
