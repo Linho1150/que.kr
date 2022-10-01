@@ -44,7 +44,15 @@
             <canvas id="timeChart"></canvas>
             <hr />
             <h5 style="font-weight: bold; color: #2bae66">접속자(분)</h5>
-            <canvas id="timeChart2"></canvas>
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th scope="col">Domain</th>
+                  <th scope="col">Count</th>
+                </tr>
+              </thead>
+              <tbody id="accMinBody"></tbody>
+            </table>
           </div>
           <div id="device">
             <h5 style="font-weight: bold; color: #2bae66">접속기기</h5>
@@ -163,47 +171,34 @@
   </script>
   <script type="text/javascript">
     const accMin= {{.accessMin}}.split(',');
-    const accMinTxt= accMin[0].split('/');
-    const accMinData= accMin[1].split('/');
 
     const accDay= {{.accessDay}}.split(',');
     const accDayTxt= accDay[0].split('/');
     const accDayData= accDay[1].split('/');
 
     const accDevice= {{.accessDevice}}.split('/');
-
-    var context = document.getElementById("timeChart").getContext("2d");
-    var myChart = new Chart(context, {
-      type: "line",
-      data: {
-        labels: accMinTxt,
-        datasets: [
-          {
-            fill: false,
-            data: accMinData,
-            borderColor: "#2BAE66",
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        legend: {
-          display: false,
-        },
-        responsive: true,
-        plugins: {
-          legend: {
-            display: false,
-          },
-          title: {
-            display: false,
-          },
-        },
-      },
-    });
   </script>
   <script type="text/javascript">
-    var context = document.getElementById("timeChart2").getContext("2d");
+    const accMinBody = document.getElementById("accMinBody");
+
+    for (domainData of accMin) {
+      const splitDomainData = domainData.split("/");
+
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      const td1Value = document.createTextNode(splitDomainData[0]);
+      const td2Value = document.createTextNode(splitDomainData[1]);
+      td1.appendChild(td1Value);
+      td2.appendChild(td2Value);
+      td2.setAttribute("class", "textAlignCenter");
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      accMinBody.appendChild(tr);
+    }
+  </script>
+  <script type="text/javascript">
+    var context = document.getElementById("timeChart").getContext("2d");
     var myChart = new Chart(context, {
       type: "line",
       data: {
