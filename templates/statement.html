@@ -22,6 +22,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href="/static/css/statement.css" rel="stylesheet" />
     <title>Que.kr</title>
   </head>
@@ -64,11 +65,17 @@
               class="form-control"
               rows="3"
               style="resize: none"
+              id="changeUrlText"
             ></textarea>
             <button class="btn btn-success" type="button">Change</button>
             <hr />
             <h5 style="font-weight: bold; color: #2bae66">Que.kr URL 삭제</h5>
-            <button class="btn btn-danger" type="button" style="margin: 0">
+            <button
+              class="btn btn-danger"
+              type="button"
+              style="margin: 0"
+              onclick="deleteUrl()"
+            >
               Delete
             </button>
           </div>
@@ -109,26 +116,6 @@
     <input style="visibility: hidden" value="{{.adminUrl}}" />
   </body>
   <script type="text/javascript">
-    const refererBody = document.getElementById("refererBody");
-
-    const accReferer = "{{.referer}}".split(",");
-    for (domainData of accReferer) {
-      const splitDomainData = domainData.split("/");
-
-      const tr = document.createElement("tr");
-      const td1 = document.createElement("td");
-      const td2 = document.createElement("td");
-      const td1Value = document.createTextNode(splitDomainData[0]);
-      const td2Value = document.createTextNode(splitDomainData[1]);
-      td1.appendChild(td1Value);
-      td2.appendChild(td2Value);
-      td2.setAttribute("class", "textAlignCenter");
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      refererBody.appendChild(tr);
-    }
-  </script>
-  <script type="text/javascript">
     const divTime = document.getElementById("time");
     const divFrom = document.getElementById("from");
     const divDevice = document.getElementById("device");
@@ -168,27 +155,83 @@
       btnDevice.className = "btn btn-success";
       btnUser.className = "btn btn-success";
     }
+    function changeUrl() {
+      const textAreaForChangeUrl = document.getElementById("changeUrlText");
+      if (prompt("Change? enter 'Change'") === "Change") {
+        axios
+          .put(`http://127.0.0.1:7979${window.location.pathname}`, {
+            url: textAreaForChangeUrl.value,
+          })
+          .then(function (result) {
+            alert("Success!");
+          })
+          .catch(function (error) {
+            console.log("Error : ", error);
+          });
+      } else {
+        alert("Wrong Input");
+      }
+    }
+    function deleteUrl() {
+      if (
+        prompt("Delete? If you really want to delete it, enter 'Delete'") ===
+        "Delete"
+      ) {
+        console.log();
+        axios
+          .delete(`http://127.0.0.1:7979${window.location.pathname}`)
+          .then(function (result) {
+            alert("Success!");
+          })
+          .catch(function (error) {
+            console.log("Error : ", error);
+          });
+      } else {
+        alert("Wrong Input");
+      }
+    }
   </script>
   <script type="text/javascript">
-    const accMin = "{{.accessMin}}".split(",");
-
-    const accDay = "{{.accessDay}}".split(",");
-    const accDayTxt = accDay[0].split("/");
-    const accDayData = accDay[1].split("/");
-
-    const accDevice = "{{.accessDevice}}".split("/");
+    const accessMinJson = JSON.parse("{{.accessMin}}");
+    const accessDayJson = JSON.parse("{{.accessDay}}");
+    const accessDeviceJson = JSON.parse("{{.accessDevice}}");
+    const refererJson = JSON.parse("{{.referer}}");
   </script>
   <script type="text/javascript">
-    const accMinBody = document.getElementById("accMinBody");
+    const refererBody = document.getElementById("refererBody");
 
-    for (domainData of accMin) {
-      const splitDomainData = domainData.split("/");
-
+    for (domainData of refererJson) {
       const tr = document.createElement("tr");
       const td1 = document.createElement("td");
       const td2 = document.createElement("td");
-      const td1Value = document.createTextNode(splitDomainData[0]);
-      const td2Value = document.createTextNode(splitDomainData[1]);
+      const td1Value = document.createTextNode(domainData.refererurl);
+      const td2Value = document.createTextNode(domainData.referercount);
+      td1.appendChild(td1Value);
+      td2.appendChild(td2Value);
+      td2.setAttribute("class", "textAlignCenter");
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      refererBody.appendChild(tr);
+    }
+  </script>
+  <script type="text/javascript">
+    let accDayTxt = new Array();
+    let accDayData = new Array();
+    accessDayJson.forEach((date, iterator) => {
+      accDayTxt.push(date.accessday);
+      accDayData.push(date.accessdaycount);
+    });
+  </script>
+
+  <script type="text/javascript">
+    const accMinBody = document.getElementById("accMinBody");
+
+    for (domainData of accessMinJson) {
+      const tr = document.createElement("tr");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      const td1Value = document.createTextNode(domainData.accessmin);
+      const td2Value = document.createTextNode(domainData.accessmincount);
       td1.appendChild(td1Value);
       td2.appendChild(td2Value);
       td2.setAttribute("class", "textAlignCenter");
@@ -229,6 +272,21 @@
     });
   </script>
   <script type="text/javascript">
+    let accDeviceArray = new Array(0, 0, 0); //["Mobile", "Web", "Etc"]
+    accessDeviceJson.forEach((data, iterator) => {
+      const deviceName = data.devicetype;
+      const deviceCount = data.devicecount;
+      if (deviceName === "pc") {
+        accDeviceArray[1] = deviceCount;
+      }
+      if (deviceName === "mobile") {
+        accDeviceArray[0] = deviceCount;
+      }
+      if (deviceName === "(unknown)") {
+        accDeviceArray[2] = deviceCount;
+      }
+    });
+
     var context = document.getElementById("deviceChart").getContext("2d");
     var myChart = new Chart(context, {
       type: "doughnut",
@@ -237,7 +295,7 @@
         datasets: [
           {
             fill: false,
-            data: accDevice,
+            data: accDeviceArray,
             borderColor: "#2BAE66",
             backgroundColor: ["#89FABC", "#67BB8D", "#3EFA93"],
             borderWidth: 1,
