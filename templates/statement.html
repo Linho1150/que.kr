@@ -67,7 +67,9 @@
               style="resize: none"
               id="changeUrlText"
             ></textarea>
-            <button class="btn btn-success" type="button">Change</button>
+            <button class="btn btn-success" type="button" onclick="changeUrl()">
+              Change
+            </button>
             <hr />
             <h5 style="font-weight: bold; color: #2bae66">Que.kr URL 삭제</h5>
             <button
@@ -181,6 +183,7 @@
           .delete(window.location.href)
           .then(function (result) {
             alert("Success!");
+            location.href = windows.location.origin;
           })
           .catch(function (error) {
             console.log("Error : ", error);
