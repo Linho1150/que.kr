@@ -78,7 +78,7 @@ func setupRouter() *gin.Engine {
 
 		item, err := svc.QueryMapping(shortkey)
 		if err != nil {
-			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
+			response.HTML(http.StatusNotFound,"error.html",gin.H{"error":"Not Found"})
 			return
 		}
 	
