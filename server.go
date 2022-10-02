@@ -3,11 +3,12 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
-	"strings"
-
 	"quekr/server/service"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -68,7 +69,10 @@ func setupRouter() *gin.Engine {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(shortkey,ipAddress,referer,deviceType)
+	
+		if (referer==""){
+			referer="Direct access"
+		}
 		err = svc.TouchStatistics(shortkey, svc.NowLocalTime(), ipAddress, referer, deviceType)
 		if err != nil {
 			panic(err)
@@ -108,27 +112,61 @@ func setupRouter() *gin.Engine {
 			panic(err)
 		}
 
-		for _, starow := range dataReferer {
-			fmt.Printf("%s => %d \n", starow.Legend.(string), starow.Counter)
-		}
+		accessMin := make([]map[string]interface{}, 0, 0)
+		accessDay := make([]map[string]interface{}, 0, 0)
+		accessDevice := make([]map[string]interface{}, 0, 0)
+		referer := make([]map[string]interface{}, 0, 0)
 
-		for _, starow := range dataDeviceType {
-			fmt.Printf("%s => %d \n", starow.Legend.(string), starow.Counter)
+		for cnt:=0;cnt<3;cnt++{
+			if cnt == len(dataDeviceType){
+				break
+			}
+			deviceTypeJson := make(map[string]interface{})
+			deviceTypeJson["devicetype"] = dataDeviceType[cnt].Legend.(string)
+			deviceTypeJson["devicecount"] = strconv.Itoa(dataDeviceType[cnt].Counter)
+			accessDevice = append(accessDevice, deviceTypeJson)
 		}
+		accessDeviceString,_ := json.Marshal(accessDevice)
 
-		for _, starow := range dataTimePerMinute {
-			fmt.Printf("Minute: %s => %d \n", starow.Legend, starow.Counter)
+		for cnt:=0;cnt<3;cnt++{
+			if cnt == len(dataReferer){
+				break
+			}
+			refererJson := make(map[string]interface{})
+			refererJson["refererurl"] = dataReferer[cnt].Legend.(string)
+			refererJson["referercount"] = strconv.Itoa(dataReferer[cnt].Counter)
+			referer = append(referer,refererJson)
 		}
+		refererString,_ := json.Marshal(referer)
 
-		for _, starow := range dataTimerPerDate {
-			fmt.Printf("Date: %s => %d \n", starow.Legend, starow.Counter)
+
+		for cnt:=0;cnt<5;cnt++{
+			if cnt == len(dataTimerPerDate){
+				break
+			}
+			accessDayJson := make(map[string]interface{})
+			accessDayJson["accessday"]=dataTimerPerDate[cnt].Legend.(time.Time).Format("2006-01-02")
+			accessDayJson["accessdaycount"]=strconv.Itoa(dataTimerPerDate[cnt].Counter)
+			accessDay = append(accessDay, accessDayJson)
 		}
+		accessDayString,_ := json.Marshal(accessDay)
+		
+		for cnt:=0;cnt<3;cnt++{
+			if cnt == len(dataTimePerMinute){
+				break
+			}
+			accessMinJson := make(map[string]interface{})
+			accessMinJson["accessmin"]=dataTimePerMinute[cnt].Legend.(time.Time).Format("2006-01-02 15:04:05")
+			accessMinJson["accessmincount"]=strconv.Itoa(dataTimePerMinute[cnt].Counter)
+			accessMin = append(accessMin, accessMinJson)
+		}
+		accessMinString,_ := json.Marshal(accessMin)
 		
 		response.HTML(http.StatusOK, "statement.html", gin.H{
-			"accessMin": `5분전/4분전/3분전/2분전/1분전,23/24/25/26/27`,
-			"accessDay": `23일/24일/25일/26일/27일,23/24/25/26/27`,
-			"accessDevice": "20/50/30", //Moblie, Web, Etc
-			"referer": `naver.com/32,daum.net/21,google.com/12,tistory.com/3,kakao.com/6,linho.kr/1`,
+			"accessMin": string(accessMinString),
+			"accessDay": string(accessDayString),
+			"accessDevice": string(accessDeviceString),
+			"referer": string(refererString),
 		},
 		)
 
@@ -182,4 +220,14 @@ func isMobile(r *http.Request) bool  {
 		return true
 	}
 	return false
+}
+
+func getMinuteItemsByIterator(iterator int,starow []*service.QueryStatisticsResultRow) string {
+	retList := ""
+	for cnt:=0;cnt<iterator;cnt++{
+		//fromTime := starow[cnt].Legend.(time.Time).Format()
+		//retList += 
+		retList += strconv.Itoa(starow[cnt].Counter)
+	}
+	return retList
 }
