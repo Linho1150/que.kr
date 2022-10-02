@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"quekr/server/service"
 	"strconv"
 	"strings"
@@ -12,6 +13,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+type ChangeUrlRequestBody struct {
+	url string
+}
 
 func setupRouter() *gin.Engine {
 	svc, err := service.NewService()
@@ -22,6 +26,8 @@ func setupRouter() *gin.Engine {
 	server := gin.Default()
 	server.Static("/static", "./static")
 	server.LoadHTMLGlob("templates/*")
+
+
 	server.GET("/", func(response *gin.Context) {
 		response.HTML(http.StatusOK, "index.html", gin.H{
 			"title": "Home Page",
@@ -30,10 +36,15 @@ func setupRouter() *gin.Engine {
 	})
 	server.POST("/",func (response *gin.Context)  {
 		originalURL := response.PostForm("originalURL");
+		if(validationURL(originalURL)){
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"It's not URL"})
+			return
+		}
 		ipAddress := ReadUserIP(response.Request)
 		info, err := svc.CreateMapping(originalURL, ipAddress)
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error(CraetMapping)"})
+			return
 		}
 		responseHTML :=
 		`<html>
@@ -67,7 +78,8 @@ func setupRouter() *gin.Engine {
 
 		item, err := svc.QueryMapping(shortkey)
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
+			return
 		}
 	
 		if (referer==""){
@@ -75,7 +87,8 @@ func setupRouter() *gin.Engine {
 		}
 		err = svc.TouchStatistics(shortkey, svc.NowLocalTime(), ipAddress, referer, deviceType)
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
+			return
 		}
     response.Redirect(http.StatusTemporaryRedirect, "http://"+item.OriginalUrl)
 	})
@@ -86,31 +99,33 @@ func setupRouter() *gin.Engine {
 
 		info, err := svc.QueryMapping(shortkey)
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
+			return
 		}
 
 		if info.SecretToken != secrettoken{
-			panic("Authentication failure");
+			response.HTML(http.StatusUnauthorized,"error.html",gin.H{"error":"Secret token isn't correct"})
+			return
 		}
 
 		dataReferer, err := svc.QueryStatistics(shortkey, service.StatisticLegendTypeReferer, false)
 		if err != nil {
-			panic(err)
-		}
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
+			return		}
 		dataDeviceType, err := svc.QueryStatistics(shortkey, service.StatisticLegendTypeDevicetype, false)
 		if err != nil {
-			panic(err)
-		}
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
+			return		}
 
 		dataTimerPerDate, err := svc.QueryStatistics(shortkey, service.StatisticLegendTypeTimePerDate, false)
 		if err != nil {
-			panic(err)
-		}
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
+			return		}
 
 		dataTimePerMinute, err := svc.QueryStatistics(shortkey, service.StatisticLegendTypeTimePerMinute, false)
 		if err != nil {
-			panic(err)
-		}
+			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
+			return		}
 
 		accessMin := make([]map[string]interface{}, 0, 0)
 		accessDay := make([]map[string]interface{}, 0, 0)
@@ -174,22 +189,32 @@ func setupRouter() *gin.Engine {
 	server.PUT("/:shortkey/:secrettoken", func(response *gin.Context) {
 		shortkey := response.Param("shortkey")
 		secrettoken := response.Param("secrettoken")
-		err = svc.UpdateMapping(shortkey, secrettoken, "https://daum.net")
-		//todo: 변경할 URL 어떻게 가져올지 고민하기
+		var requestBody ChangeUrlRequestBody
+		if err := response.BindJSON(&requestBody); err != nil {
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
+			return
+		}
+		if(validationURL(requestBody.url)){
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"It's not URL"})
+			return
+		}
+		err = svc.UpdateMapping(shortkey, secrettoken, requestBody.url)
 	
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusUnauthorized,"error.html",gin.H{"error":"Unauthorized"})
+			return
 		}
-		response.String(200, "update")
+		response.Status(http.StatusOK);
 	})
 	server.DELETE("/:shortkey/:secrettoken", func(response *gin.Context) {	
 		shortkey := response.Param("shortkey")
 		secrettoken := response.Param("secrettoken")
 		err = svc.RemoveMapping(shortkey, secrettoken)
 		if err != nil {
-			panic(err)
+			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
+			return
 		}
-		response.String(200, "remove")
+		response.Status(http.StatusOK);
 	})
 	return server
 }
@@ -222,12 +247,13 @@ func isMobile(r *http.Request) bool  {
 	return false
 }
 
-func getMinuteItemsByIterator(iterator int,starow []*service.QueryStatisticsResultRow) string {
-	retList := ""
-	for cnt:=0;cnt<iterator;cnt++{
-		//fromTime := starow[cnt].Legend.(time.Time).Format()
-		//retList += 
-		retList += strconv.Itoa(starow[cnt].Counter)
+func validationURL(targetUrl string) bool{
+	parseUrl, err := url.Parse(targetUrl)
+	if err != nil {
+		return true
 	}
-	return retList
+	if !(parseUrl.Scheme == "http" || parseUrl.Scheme == "https"){
+		return true
+	}
+	return false
 }
