@@ -90,7 +90,7 @@ func setupRouter() *gin.Engine {
 			response.HTML(http.StatusServiceUnavailable,"error.html",gin.H{"error":"Server Error"})
 			return
 		}
-    response.Redirect(http.StatusTemporaryRedirect, "http://"+item.OriginalUrl)
+    response.Redirect(http.StatusTemporaryRedirect, item.OriginalUrl)
 	})
 
 	server.GET("/:shortkey/:secrettoken", func(response *gin.Context) {
