@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 type ChangeUrlRequestBody struct {
-	url string
+	Url string
 }
 
 func setupRouter() *gin.Engine {
@@ -182,6 +182,7 @@ func setupRouter() *gin.Engine {
 			"accessDay": string(accessDayString),
 			"accessDevice": string(accessDeviceString),
 			"referer": string(refererString),
+			"origianlURL": info.OriginalUrl,
 		},
 		)
 
@@ -194,11 +195,11 @@ func setupRouter() *gin.Engine {
 			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"Bad request"})
 			return
 		}
-		if(validationURL(requestBody.url)){
+		if(validationURL(requestBody.Url)){
 			response.HTML(http.StatusBadRequest,"error.html",gin.H{"error":"It's not URL"})
 			return
 		}
-		err = svc.UpdateMapping(shortkey, secrettoken, requestBody.url)
+		err = svc.UpdateMapping(shortkey, secrettoken, requestBody.Url)
 	
 		if err != nil {
 			response.HTML(http.StatusUnauthorized,"error.html",gin.H{"error":"Unauthorized"})
