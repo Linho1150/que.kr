@@ -66,6 +66,7 @@
               rows="3"
               style="resize: none"
               id="changeUrlText"
+              placeholder="{{.origianlURL}}"
             ></textarea>
             <button class="btn btn-success" type="button" onclick="changeUrl()">
               Change
@@ -169,6 +170,7 @@
           })
           .catch(function (error) {
             console.log("Error : ", error);
+            alert("Wrong Input");
           });
       } else {
         alert("Wrong Input");
