@@ -200,8 +200,6 @@
     const accessDayJson = JSON.parse("{{.accessDay}}");
     const accessDeviceJson = JSON.parse("{{.accessDevice}}");
     const refererJson = JSON.parse("{{.referer}}");
-  </script>
-  <script type="text/javascript">
     const refererBody = document.getElementById("refererBody");
 
     for (domainData of refererJson) {
@@ -217,17 +215,14 @@
       tr.appendChild(td2);
       refererBody.appendChild(tr);
     }
-  </script>
-  <script type="text/javascript">
+
     let accDayTxt = new Array();
     let accDayData = new Array();
     accessDayJson.forEach((date, iterator) => {
       accDayTxt.push(date.accessday);
       accDayData.push(date.accessdaycount);
     });
-  </script>
 
-  <script type="text/javascript">
     const accMinBody = document.getElementById("accMinBody");
 
     for (domainData of accessMinJson) {
