@@ -26,7 +26,7 @@ func GetStaticData(c *gin.Context, svc *service.Service, shortKey string) ([]*se
 		return nil,nil,nil,nil,err
 	}
 
-	dataTimerPerDate, err := svc.QueryStatistics(shortKey, service.StatisticLegendTypeTimePerDate, false)
+	dataTimerPerDate, err := svc.QueryStatistics(shortKey, service.StatisticLegendTypeTimePerDate, true)
 	if err != nil {
 		c.HTML(http.StatusServiceUnavailable, "error.html", gin.H{"error": "Server Error"})
 		return nil,nil,nil,nil,err
